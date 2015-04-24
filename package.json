@@ -1,0 +1,19 @@
+{
+  "name": "bleeding-storm",
+  "version": "1.0.0",
+  "description": "frontend of the brainstorming tool",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mabey01/bleeding-storm.git"
+  },
+  "author": "Maximilian Beyer",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mabey01/bleeding-storm/issues"
+  },
+  "homepage": "https://github.com/mabey01/bleeding-storm"
+}
