@@ -1,0 +1,12 @@
+{
+  "name": "bleeding-storm",
+  "version": "0.0.0",
+  "homepage": "https://github.com/mabey01/bleeding-storm",
+  "authors": [
+    "Maximilian <mabey01@gmail.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "normalize.css": "~3.0.3"
+  }
+}
