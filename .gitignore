@@ -2,6 +2,6 @@
 
 .idea
 
-bower_components/*
-node_modules/*
-local/*
+bower_components
+node_modules
+local

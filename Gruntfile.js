@@ -8,8 +8,10 @@ module.exports = function (grunt) {
         concat: {
             local : {
                 files: {
-                    "local/js/<%= pkg.name %>.js": ["src/app.js", "src/modules/**/*.js"],
+                    "local/js/<%= pkg.name %>.js": ["src/js/**/*.js"],
                     "local/js/libs.js": [
+                        "bower_components/angular/angular.js",
+                        "bower_components/angular-route/angular-route.js"
                     ],
                     "local/css/libs.css": [
                         "bower_components/normalize.css/normalize.css"
@@ -37,7 +39,10 @@ module.exports = function (grunt) {
         copy: {
             local : {
                 files : [
-                    {cwd: "src/", src: ["*", "!app.js"], dest: "local/", expand: true, filter: "isFile"}
+                    {cwd: "src/", src: ["*", "!app.js"], dest: "local/", expand: true, filter: "isFile"},
+                    {cwd: "src/js/modules/", src: ["**/*.tpl.html"], dest: "local/templates", expand: true, filter: "isFile", rename: function (dst, src) {
+                        return dst + "/" + src.replace("/views", "");
+                    }}
                 ]
             },
             development: {
@@ -78,7 +83,7 @@ module.exports = function (grunt) {
                 files: [{
                     expand: true,
                     flatten: false,
-                    src: ["local/js/<%= pkg.name %>.js", 'local/*.html', 'local/webManifest.json']
+                    src: ["local/js/<%= pkg.name %>.js", 'local/**/*.html', 'local/webManifest.json']
                 }]
             },
 

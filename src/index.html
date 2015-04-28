@@ -1,26 +1,20 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="@@name">
 <head lang="en">
     <meta charset="UTF-8">
     <meta name="description" content="@@description">
     <meta name="author" content="@@author.name">
-    <title>@@name</title>
+    <title>@@name - @@version</title>
+
+    <link rel="stylesheet" href="css/libs.css" type="text/css">
 </head>
 <body>
-<h1>Welcome to Bleeding Storm</h1>
 
-<form>
-    <h2>Create new Session</h2>
-    <label for="newSession_topic">Topic</label>
-    <input id="newSession_topic" type="text">
+<section ng-view>
 
-    <label for="newSession_date">Date</label>
-    <input id="newSession_date" type="date">
+</section>
 
-    <label for="newSession_time">Time</label>
-    <input id="newSession_time" type="time">
-
-    <button type="submit">Create</button>
-</form>
+<script type="application/javascript" src="js/libs.js"></script>
+<script type="application/javascript" src="js/@@name.js"></script>
 </body>
 </html>
