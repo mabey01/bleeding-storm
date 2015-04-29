@@ -1,6 +1,6 @@
 {
   "name": "bleeding-storm",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "frontend of the brainstorming tool",
   "main": "index.js",
   "scripts": {
