@@ -6,7 +6,5 @@
  * Created by Maximilian on 25.04.2015.
  */
 
-bsHomeModule.controller('bsHomeCtrl', ['$scope' ,function(scope) {
-
-    console.log(scope);
+bsHomeModule.controller('bsHomeCtrl', ['$scope', function(scope) {
 }]);

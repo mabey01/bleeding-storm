@@ -11,7 +11,8 @@ module.exports = function (grunt) {
                     "local/js/<%= pkg.name %>.js": ["src/js/**/*.js"],
                     "local/js/libs.js": [
                         "bower_components/angular/angular.js",
-                        "bower_components/angular-route/angular-route.js"
+                        "bower_components/angular-route/angular-route.js",
+                        "bower_components/angular-translate/angular-translate.js"
                     ],
                     "local/css/libs.css": [
                         "bower_components/normalize.css/normalize.css"
@@ -24,6 +25,7 @@ module.exports = function (grunt) {
                 }
             }
         },
+
         less: {
             local : {
                 files: {
@@ -36,13 +38,15 @@ module.exports = function (grunt) {
                 }
             }
         },
+
         copy: {
             local : {
                 files : [
                     {cwd: "src/", src: ["*", "!app.js"], dest: "local/", expand: true, filter: "isFile"},
                     {cwd: "src/js/modules/", src: ["**/*.tpl.html"], dest: "local/templates", expand: true, filter: "isFile", rename: function (dst, src) {
                         return dst + "/" + src.replace("/views", "");
-                    }}
+                    }},
+                    {cwd: "bower_components/lato/font/", src: ["**/*"], dest: "local/fonts", expand: true, filter: "isFile"}
                 ]
             },
             development: {
@@ -51,6 +55,7 @@ module.exports = function (grunt) {
                 ]
             }
         },
+
         autoprefixer : {
             local : {
                 options: {
@@ -73,6 +78,7 @@ module.exports = function (grunt) {
                 dest: "development/css/" // -> dest/css/file1.css, dest/css/file2.css
             }
         },
+
         replace : {
             local: {
                 options: {
@@ -101,6 +107,17 @@ module.exports = function (grunt) {
             }
         },
 
+        babel : {
+            options: {
+                sourceMap: false
+            },
+            dist: {
+                files: {
+                    'local/js/<%= pkg.name %>_es6.js': 'local/js/<%= pkg.name %>.js'
+                }
+            }
+        },
+
         watch: {
             scripts: {
                 files: ["src/**/*"],
@@ -118,9 +135,10 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks("grunt-autoprefixer");
     grunt.loadNpmTasks("grunt-replace");
     grunt.loadNpmTasks("grunt-contrib-watch");
+    grunt.loadNpmTasks("grunt-babel");
 
     grunt.registerTask("development", ["concat:development", "less:development", "autoprefixer:development", "copy:development", "replace:development"]);
-    grunt.registerTask("local", ["concat:local", "less:local", "autoprefixer:local", "copy:local", "replace:local"]);
+    grunt.registerTask("local", ["concat:local", "less:local", "autoprefixer:local", "copy:local", "replace:local", "babel"]);
     grunt.registerTask("test", ["karma:development"]);
 
 };

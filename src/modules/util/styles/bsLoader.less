@@ -1,0 +1,22 @@
+
+bs-loader {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+
+  @keyframes rotate {
+    from {transform: rotate(0deg);}
+    to {transform: rotate(360deg);}
+  }
+
+  svg {
+    circle {
+      stroke: black;
+      fill: none;
+      stroke-width: 6;
+      stroke-dasharray : 20px, 40px;
+      transform-origin: 50% 50%;
+      animation: rotate 1s cubic-bezier(.17,.67,.83,.67) 0s infinite normal;
+    }
+  }
+}

@@ -11,8 +11,8 @@
     "url": "https://github.com/mabey01/bleeding-storm.git"
   },
   "author": {
-    "name" : "Maximilian Beyer",
-    "email" : "mabey01@gmail.com"
+    "name": "Maximilian Beyer",
+    "email": "mabey01@gmail.com"
   },
   "license": "ISC",
   "bugs": {
@@ -27,5 +27,8 @@
     "grunt-contrib-less": "^1.0.1",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-replace": "^0.8.0"
+  },
+  "devDependencies": {
+    "grunt-babel": "^5.0.0"
   }
 }

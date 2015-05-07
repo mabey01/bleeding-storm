@@ -1,0 +1,10 @@
+<div class="session">
+    <div class="information">
+        <div class="topic">
+            Topic: <strong title="Topic">{{::session.getTopic()}}</strong>
+        </div>
+        <bs-countdown to="{{::session.getTime().getTime()}}" title="Starts in">
+
+        </bs-countdown>
+    </div>
+</div>

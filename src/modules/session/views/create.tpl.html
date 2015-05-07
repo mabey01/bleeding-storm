@@ -1,0 +1,30 @@
+ <!--FIRST STEP -->
+<div ng-if="!submitted && !done">
+    <form bs-forms-submit="submit(form)">
+        <h2>Create new Session</h2>
+        <label for="newSession_topic">Topic</label>
+        <input id="newSession_topic" type="text" name="topic" value="Testing">
+
+        <label for="newSession_description">Description</label>
+        <input id="newSession_topic" type="text" name="topic" value="Testing">
+
+        <label for="newSession_date">Date</label>
+        <input id="newSession_date" type="date" name="date" value="2015-05-08">
+
+        <label for="newSession_time">Time</label>
+        <input id="newSession_time" type="time" name="time" value="10:13">
+
+        <button type="submit">Create</button>
+    </form>
+</div>
+
+ <!--SECOND STEP-->
+ <div ng-if="submitted && !done">
+     <bs-loader size="2em"></bs-loader>
+ </div>
+
+ <!--THIRD STEP-->
+ <div ng-if="newSession">
+     Your Session was successfully created! Here is the link to your session : <a href="{{::newSession.getLink()}}">{{::newSession.getLink()}}</a>
+     <button ng-click="createAnother()">Create another Session</button>
+ </div>

@@ -1,0 +1,28 @@
+
+@fontsDir : '../fonts/';
+
+.importFonts(@fontName; @fontPath) {
+  @font-face {
+    font-family: @fontName;
+    src: url('@{fontPath}.eot'); /* IE9 Compat Modes */
+    src: url('@{fontPath}.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+    url('@{fontPath}.woff2') format('woff2'), /* Super Modern Browsers */
+    url('@{fontPath}.woff') format('woff'), /* Pretty Modern Browsers */
+    url('@{fontPath}.ttf')  format('truetype'), /* Safari, Android, iOS */
+    url('@{fontPath}.svg#svgFontName') format('svg'); /* Legacy iOS */
+  }
+}
+
+
+@latoThin : ' @{fontsDir}lato-thin/lato-thin';
+.importFonts('LetoThin', @latoThin);
+
+@latoHairline : '@{fontsDir}lato-hairline/lato-hairline';
+.importFonts('LatoHairline', '@{fontsDir}@{latoHairline}');
+
+@latoRegular : '@{fontsDir}lato-regular/lato-regular';
+.importFonts('LetoRegular', '@{fontsDir}@{latoRegular}');
+
+@latoBold : '@{fontsDir}lato-bold/lato-bold';
+.importFonts('LetoBold', '@{fontsDir}@{latoBold}');
+
