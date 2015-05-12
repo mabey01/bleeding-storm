@@ -1,0 +1,29 @@
+
+.bsBackroundImage {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top : 0;
+  left : 0;
+  z-index: -1;
+  background: linear-gradient(145deg,  #eeba92 0%,#8ecff9 100%);
+
+  img {
+    position: absolute;
+    top : 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    filter: blur(5px);
+
+    transition: opacity 3000ms;
+
+    &.hidden {
+      opacity: 0;
+    }
+
+    &.visibile {
+      opacity: 1;
+    }
+  }
+}
