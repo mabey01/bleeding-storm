@@ -2,56 +2,101 @@
  * Created by Maximilian on 06.05.2015.
  */
 
-bsSessionModule.factory('bsSession.SessionFactory', ['$frontendURL', function (baseURL) {
+bsSessionModule.factory('bsSession.SessionFactory', ['$frontendURL', 'bsMindmap.MapFactory', 'bsSocket.bsSocket', function (baseURL, mapFactory, bsSockets) {
 
-    class Session {
-        constructor(specs) {
-            if ('_id' in specs) {
-                this._id = specs._id;
+    let SessionFactory = function (specs) {
+
+        let ID = specs._id;
+        let topic = specs._topic;
+        let description = specs._description;
+        let startingTime = new Date(specs._startingTime);
+        let duration = specs._duration;
+        let eventHandler = {};
+        let triggerEvent = (eventName, data) => {
+            if (eventName in eventHandler) {
+                eventHandler[eventName].forEach((handler) => {
+                    handler(data);
+                })
             }
+        };
 
-            if ('_topic' in specs) {
-                this._topic = specs._topic;
-            }
+        return {
+            getID () {
+                return ID;
+            },
 
-            if ('_timestamp' in specs) {
-                this._time = new Date(specs._timestamp);
+            getTopic() {
+                return topic;
+            },
 
-                this._active = true;
-                var timeLeft = this._time.getTime() - Date.now();
-                if (timeLeft > 0) {
-                    this._active = false;
-                    setTimeout(function() {
-                        this._active = true;
-                    }.bind(this), timeLeft)
+            getDescription() {
+                return description;
+            },
+
+            getStartingTime() {
+                return startingTime;
+            },
+
+            getEndTime() {
+                return this.endTime;
+            },
+
+            getLink() {
+                return baseURL + '#/' + this.getID();
+            },
+
+            isExpired() {
+                let now = Date.now();
+                let isAfterStartingTime = now - startingTime.getTime() >= 0;
+                return isAfterStartingTime;
+            },
+
+            isActive() {
+                let now = Date.now();
+                let isAfterStartingTime = now - startingTime.getTime() >= 0;
+                let isBeforeEndTime = startingTime.getTime() - now > 0;
+                return isAfterStartingTime;
+            },
+
+            setupConnection() {
+                return bsSockets.getSocket().then((socket) => {
+                    socket.emit("sessionID", this.getID());
+
+                    socket.on("joinedUser", triggerEvent.bind(null, "joinedUser"));
+                    socket.on("leftUser", triggerEvent.bind(null, "leftUser"));
+                    socket.on("numberOfUsers", triggerEvent.bind(null, "numberOfUsers"));
+                    socket.on("newNode", triggerEvent.bind(null, "newNode"));
+                    socket.on("updateNode", triggerEvent.bind(null, "updateNode"));
+                });
+            },
+
+            emit(eventName, data) {
+                return bsSockets.getSocket().then((socket) => {
+                    socket.emit(eventName, data);
+                });
+            },
+
+            on(eventName, callback) {
+                if (eventName in eventHandler) {
+                    eventHandler[eventName].push(callback);
+                } else {
+                    eventHandler[eventName] = [callback];
                 }
             }
         }
-
-        getID() {
-            return this._id;
-        }
-
-        getTopic() {
-            return this._topic;
-        }
-
-        getTime() {
-            return this._time;
-        }
-
-        getLink() {
-            return baseURL + '#/' + this._id;
-        }
-    }
+    };
 
     return {
         construct : function(specs) {
-            return new Session(specs);
+            console.log(specs);
+            let map = mapFactory.construct(specs.map);
+            let session = SessionFactory(specs);
+
+            return Object.assign(Object.create(map), session);
         },
 
         constructed : function (object) {
-            return object instanceof Session;
+            return object instanceof SessionFactory;
         }
     }
 }]);

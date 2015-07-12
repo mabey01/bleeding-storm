@@ -23,5 +23,7 @@ var bsImagesModule = angular.module('bsImages', [])
         'fullBackground17.jpg',
         'fullBackground18.jpg',
         'fullBackground19.jpg',
-        'fullBackground20.jpg'
+        'fullBackground20.jpg',
+        'fullBackground21.jpg',
+        'fullBackground22.jpg'
     ]);

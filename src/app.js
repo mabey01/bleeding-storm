@@ -4,14 +4,17 @@
 
 'use strict';
 
-angular.module('@@name', [
+angular.module('bleeding-storm', [
     'ngRoute',
     'pascalprecht.translate',
+    'bsSocket',
     'bsSession',
     'bsHome',
     'bsForms',
     'bsUtil',
-    'bsLanguage'
+    'bsImages',
+    'bsLanguage',
+    'bsMindmap',
 ])
     .constant('$backendURL', 'http://localhost:4444')
     .constant('$frontendURL', window.location.origin + window.location.pathname)
@@ -26,6 +29,7 @@ angular.module('@@name', [
         };
 
         translate
+            .useSanitizeValueStrategy('escaped')
             .translations('en', translationEN)
             .translations('de', translationDE)
             .preferredLanguage('en');
@@ -45,6 +49,6 @@ angular.module('@@name', [
             templateUrl : 'templates/home/homeCtrl.tpl.html'
         })
     }])
-    .run(['$http', function (http) {
+    .run(['bsSession.SessionFactory', function (sessionFactory) {
     }])
 ;

@@ -3,7 +3,8 @@ body {
   font-family: 'LatoHairline', sans-serif;
   font-weight: 100;
   -webkit-font-smoothing: subpixel-antialiased;
-  font-size: 1.1em;
+  font-size: 1.2em;
+  color: #ffffff;
 
   .boldUp (@fontWeight : 100) {
     font-family: 'LetoThin', sans-serif;
@@ -16,5 +17,23 @@ body {
 
   strong {
     .boldUp(900)
+  }
+
+  .middle {
+    display: block;
+    position: fixed;
+    background-color: red;
+  }
+
+  .horizontal {
+    height: 1px;
+    width: 100%;
+    top: 50%;
+  }
+
+  .vertical {
+    width: 1px;
+    height: 100%;
+    left: 50%;
   }
 }

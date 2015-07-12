@@ -4,8 +4,8 @@
 
 bsUtilModule.directive('bsCountdown', [function () {
 
-    var parseTime = function(timeString) {
-        var time = Date.parse(timeString);
+    let parseTime = function(timeString) {
+        let time = Date.parse(timeString);
 
         if (time.prototype != 'Date') {
             time = new Date(timeString)
@@ -18,21 +18,21 @@ bsUtilModule.directive('bsCountdown', [function () {
         return time;
     };
 
-    var formatTime = function(time) {
-        var helpTime = time;
+    let formatTime = function(time) {
+        let helpTime = time;
 
-        var days = parseInt(helpTime / (24*60*60*1000));
+        let days = parseInt(helpTime / (24*60*60*1000));
         helpTime -= days * (24*60*60*1000);
 
-        var hours = parseInt(helpTime / (60*60*1000));
+        let hours = parseInt(helpTime / (60*60*1000));
         helpTime -= hours * (60*60*1000);
 
-        var minutes = parseInt(helpTime / (60*1000));
+        let minutes = parseInt(helpTime / (60*1000));
         helpTime -= minutes * (60*1000);
 
-        var seconds = parseInt(helpTime / 1000);
+        let seconds = parseInt(helpTime / 1000);
 
-        var timeString = '';
+        let timeString = '';
         if (days) timeString += days + 'd ';
 
         if (hours > 9) timeString += hours + 'h ';
@@ -50,14 +50,19 @@ bsUtilModule.directive('bsCountdown', [function () {
     return {
         restrict : 'E',
         link : function (scope, element, attrs) {
-            var countdownTo = parseTime(attrs.to);
-            var timeLeft = countdownTo.getTime() - Date.now();
-            if (timeLeft < 0 ) return element.html('Countdown expired');
+            let display = (string) => {
+                if (!angular.isString(string)) string = string.toString();
+                element[0].innerHTML = string;
+            };
+
+            let countdownTo = parseTime(attrs.to);
+            let timeLeft = countdownTo.getTime() - Date.now();
+            if (timeLeft < 0 ) return display('Countdown expired');
             else {
-                element.html(formatTime(timeLeft));
-                setInterval(function () {
+                display(formatTime(timeLeft));
+                setInterval(() => {
                     timeLeft -= 1000;
-                    element.html(formatTime(timeLeft));
+                    display(formatTime(timeLeft));
                 }, 1000)
             }
         }

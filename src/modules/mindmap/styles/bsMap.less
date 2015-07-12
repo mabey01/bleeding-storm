@@ -1,0 +1,24 @@
+
+bs-map .map {
+  width: 10000px;
+  height : 10000px;
+  display: block;
+  font-size: 2em;
+
+  .hidden {
+    opacity: 0;
+    pointer-events: none
+  }
+
+  .node {
+    position: absolute;
+    background-color: rgba(0,0,0,0.5);
+    border-radius: 5px;
+    padding: 10px;
+    vertical-align: middle;
+
+    input {
+      width: 70px;
+    }
+  }
+}

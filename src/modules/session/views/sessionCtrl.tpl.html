@@ -1,10 +1,15 @@
 <div class="session">
-    <div class="information">
+    <div class="information" ng-if="!session.isActive()">
         <div class="topic">
-            Topic: <strong title="Topic">{{::session.getTopic()}}</strong>
+            Topic: <strong title="topic">{{::session.getTopic()}}</strong>
         </div>
-        <bs-countdown to="{{::session.getTime().getTime()}}" title="Starts in">
-
+        <bs-countdown to="{{::session.getStartingTime().getTime()}}" title="Starts in">
         </bs-countdown>
+
+        <div class="description" ng-if="session.getDescription()!=null">
+            Description: <strong title="description">{{::session.getDescription()}}</strong>
+        </div>
     </div>
+
+    <bs-map session="session" ng-if="session.isExpired()" is-editible="{{session.isActive()}}"></bs-map>
 </div>

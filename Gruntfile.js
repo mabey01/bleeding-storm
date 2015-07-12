@@ -8,11 +8,13 @@ module.exports = function (grunt) {
         concat: {
             local : {
                 files: {
-                    "local/js/<%= pkg.name %>.js": ["src/js/**/*.js"],
+                    "local/js/<%= pkg.name %>.js": ["src/**/*.js"],
                     "local/js/libs.js": [
                         "bower_components/angular/angular.js",
+                        "bower_components/socket.io-client/socket.io.js",
                         "bower_components/angular-route/angular-route.js",
-                        "bower_components/angular-translate/angular-translate.js"
+                        "bower_components/angular-translate/angular-translate.js",
+                        "node_modules/core-js/client/core.js"
                     ],
                     "local/css/libs.css": [
                         "bower_components/normalize.css/normalize.css"
@@ -43,7 +45,8 @@ module.exports = function (grunt) {
             local : {
                 files : [
                     {cwd: "src/", src: ["*", "!app.js"], dest: "local/", expand: true, filter: "isFile"},
-                    {cwd: "src/js/modules/", src: ["**/*.tpl.html"], dest: "local/templates", expand: true, filter: "isFile", rename: function (dst, src) {
+                    {cwd: "src/", src: ["images/*"], dest: "local/", expand: true, filter: "isFile"},
+                    {cwd: "src/modules/", src: ["**/*.tpl.html"], dest: "local/templates", expand: true, filter: "isFile", rename: function (dst, src) {
                         return dst + "/" + src.replace("/views", "");
                     }},
                     {cwd: "bower_components/lato/font/", src: ["**/*"], dest: "local/fonts", expand: true, filter: "isFile"}
@@ -107,6 +110,12 @@ module.exports = function (grunt) {
             }
         },
 
+        karma : {
+            unit: {
+                configFile: 'karma.conf.js'
+            }
+        },
+
         babel : {
             options: {
                 sourceMap: false
@@ -134,11 +143,12 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks("grunt-contrib-less");
     grunt.loadNpmTasks("grunt-autoprefixer");
     grunt.loadNpmTasks("grunt-replace");
+    grunt.loadNpmTasks('grunt-karma');
     grunt.loadNpmTasks("grunt-contrib-watch");
     grunt.loadNpmTasks("grunt-babel");
 
     grunt.registerTask("development", ["concat:development", "less:development", "autoprefixer:development", "copy:development", "replace:development"]);
     grunt.registerTask("local", ["concat:local", "less:local", "autoprefixer:local", "copy:local", "replace:local", "babel"]);
-    grunt.registerTask("test", ["karma:development"]);
+    grunt.registerTask("test", ["karma:unit"]);
 
 };
