@@ -46,6 +46,17 @@ bsMindmapModule.factory('bsMap.Vector', [function() {
                 this.multiply(Vector(factor, factor, factor));
             },
 
+            rotate(angle) {
+                const radiant = angle * Math.PI / 180;
+                const cos = Math.cos(radiant);
+                const sin = Math.sin(radiant);
+                const oldX = x;
+                const oldY = y;
+
+                x = oldX * cos - oldY * sin;
+                y = oldX * sin + oldY * cos;
+            },
+
             toString() {
                 return `(X: ${this.getX()}, Y: ${this.getY()}, Z: ${this.getZ()})`
             }

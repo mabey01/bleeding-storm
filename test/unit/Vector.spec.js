@@ -48,5 +48,16 @@ describe('Vector Factory', function () {
             a.stretch(2);
             expect(a.getLength()).toEqual(originalLength*2);
         });
+
+        it('should rotate Vector correctly', function() {
+            let a = vectorFactory.construct(2,1);
+            let oldX = a.getX();
+            let oldY = a.getY();
+
+            a.rotate(180);
+
+            expect(Math.round(a.getX())).toEqual((-1) * oldX);
+            expect(Math.round(a.getY())).toEqual((-1) * oldY);
+        });
     })
 });
