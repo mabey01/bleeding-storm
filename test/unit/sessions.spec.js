@@ -15,7 +15,11 @@ describe('Session Factory', function () {
         topic : 'testing',
         description : 'its about testing',
         startingTime : new Date(2014, 11, 24, 16, 0, 25, 0),
-        endTime : new Date(2014, 11, 24, 17, 0, 25, 0)
+        endTime : new Date(2014, 11, 24, 17, 0, 25, 0),
+        map : {
+            id: 123,
+            position : {x:0,y:0}
+        }
     };
 
     describe('Construction', function () {
@@ -53,7 +57,6 @@ describe('Session Factory', function () {
         });
 
         it('should return all the right getter values', function () {
-            console.log(testingSession);
             expect(testingSession.getID()).toEqual(rawSessionObject._id);
             //expect(testingSession.getTopic()).toEqual(rawSessionObject.topic);
             //expect(testingSession.getDescription()).toEqual(rawSessionObject.description);

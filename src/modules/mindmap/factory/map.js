@@ -43,6 +43,11 @@ bsMindmapModule.factory('bsMindmap.MapFactory', ['bsMindmap.MapNodeFactory', 'bs
                 let newNode = mindmapNodeFactory.construct(rawNodeSpecs);
                 let parent = this.getNodeByID(newNode.getParentID());
                 parent.addNode(newNode);
+            },
+
+            updateRawNode(updatedNodeSpecs) {
+                let oldNode = this.getNodeByID(updatedNodeSpecs.id);
+                oldNode.update(updatedNodeSpecs);
             }
         }
     };

@@ -2,7 +2,7 @@
  * Created by Maximilian on 19.05.2015.
  */
 
-bsMindmapModule.factory('bsMindmap.MapNodeFactory', ['bsUtil.idMaker', 'bsMap.Position', 'bsMindmap.ID_LENGTH', function (idMaker, positionFactory, ID_LENGTH) {
+bsMindmapModule.factory('bsMindmap.MapNodeFactory', ['bsEvents.bsEventHandler', 'bsUtil.idMaker', 'bsMap.Position', 'bsMindmap.ID_LENGTH', function (bsEventHandlerFactory, idMaker, positionFactory, ID_LENGTH) {
 
     let MapNodeFactory = function MapNodeFactory(specs) {
         let id = specs.parentID || '';
@@ -100,6 +100,10 @@ bsMindmapModule.factory('bsMindmap.MapNodeFactory', ['bsUtil.idMaker', 'bsMap.Po
                 if ("title" in updateObject) {
                     this.setTitle(updateObject.title);
                 }
+
+                if("position" in updateObject) {
+                    this.getPosition().setPosition(updateObject.position);
+                }
             },
 
             serialize() {
@@ -118,7 +122,10 @@ bsMindmapModule.factory('bsMindmap.MapNodeFactory', ['bsUtil.idMaker', 'bsMap.Po
 
     return {
         construct(specs) {
-            return MapNodeFactory(specs);
+            let bsEventHandler = bsEventHandlerFactory.construct();
+            let node = MapNodeFactory(specs);
+
+            return Object.assign(Object.create(bsEventHandler), node);
         }
     };
 }]);

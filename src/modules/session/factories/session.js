@@ -11,14 +11,7 @@ bsSessionModule.factory('bsSession.SessionFactory', ['$frontendURL', 'bsMindmap.
         let description = specs._description;
         let startingTime = new Date(specs._startingTime);
         let duration = specs._duration;
-        let eventHandler = {};
-        let triggerEvent = (eventName, data) => {
-            if (eventName in eventHandler) {
-                eventHandler[eventName].forEach((handler) => {
-                    handler(data);
-                })
-            }
-        };
+        let activeUsers = 1;
 
         return {
             getID () {
@@ -62,11 +55,11 @@ bsSessionModule.factory('bsSession.SessionFactory', ['$frontendURL', 'bsMindmap.
                 return bsSockets.getSocket().then((socket) => {
                     socket.emit("sessionID", this.getID());
 
-                    socket.on("joinedUser", triggerEvent.bind(null, "joinedUser"));
-                    socket.on("leftUser", triggerEvent.bind(null, "leftUser"));
-                    socket.on("numberOfUsers", triggerEvent.bind(null, "numberOfUsers"));
-                    socket.on("newNode", triggerEvent.bind(null, "newNode"));
-                    socket.on("updateNode", triggerEvent.bind(null, "updateNode"));
+                    socket.on("joinedUser", () => { activeUsers++});
+                    socket.on("leftUser", () => { activeUsers--});
+                    socket.on("numberOfUsers", (numberOfUsers) => {activeUsers = numberOfUsers});
+                    socket.on("newNode", (rawNodeSpecs) => {this.insertRawNode(rawNodeSpecs)});
+                    socket.on("updateNode", (updatedNodeSpecs) => {this.updateRawNode(updatedNodeSpecs)});
                 });
             },
 
@@ -74,14 +67,6 @@ bsSessionModule.factory('bsSession.SessionFactory', ['$frontendURL', 'bsMindmap.
                 return bsSockets.getSocket().then((socket) => {
                     socket.emit(eventName, data);
                 });
-            },
-
-            on(eventName, callback) {
-                if (eventName in eventHandler) {
-                    eventHandler[eventName].push(callback);
-                } else {
-                    eventHandler[eventName] = [callback];
-                }
             }
         }
     };
