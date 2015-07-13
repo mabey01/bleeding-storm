@@ -15,6 +15,7 @@ angular.module('bleeding-storm', [
     'bsImages',
     'bsLanguage',
     'bsMindmap',
+    'bsEvents'
 ])
     .constant('$backendURL', 'http://localhost:4444')
     .constant('$frontendURL', window.location.origin + window.location.pathname)
