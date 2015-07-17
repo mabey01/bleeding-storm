@@ -7,11 +7,12 @@
 angular.module('bleeding-storm', [
     'ngRoute',
     'pascalprecht.translate',
+    'bsUtil',
+    'bsInitialize',
     'bsSocket',
     'bsSession',
     'bsHome',
     'bsForms',
-    'bsUtil',
     'bsImages',
     'bsLanguage',
     'bsMindmap',
@@ -44,6 +45,10 @@ angular.module('bleeding-storm', [
               }]
             },
             templateUrl : 'templates/session/sessionCtrl.tpl.html'
+        });
+        routeProvider.when('/error', {
+            controller : 'bsErrorCtrl',
+            templateUrl : 'templates/error/errorCtrl.tpl.html'
         });
         routeProvider.otherwise({
             controller : 'bsHomeCtrl',

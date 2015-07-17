@@ -2,7 +2,7 @@
  * Created by Maximilian on 09.07.2015.
  */
 
-bsUtilModule.service('bsUtil.idMaker', [function () {
+bsUtilModule.service('bsUtil.idGenerator', [function () {
 
     const CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 

@@ -4,7 +4,7 @@
 
 bsEventsModule.factory('bsEvents.bsEventHandler', [function () {
 
-    let bsEventHandlerFactory = function (specs) {
+    function bsEventHandlerFactory(specs) {
         let listeners = {};
 
         return {
@@ -35,11 +35,11 @@ bsEventsModule.factory('bsEvents.bsEventHandler', [function () {
                 }
             }
         }
-    };
+    }
 
     return {
-        construct() {
-            return bsEventHandlerFactory();
+        construct(specs = {}) {
+            return bsEventHandlerFactory(specs);
         }
     }
 }]);

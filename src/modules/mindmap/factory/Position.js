@@ -21,6 +21,25 @@ bsMindmapModule.factory('bsMap.Position', [function() {
                 return `X: ${x}, Y: ${y}`
             },
 
+            setPosition(newPosition, newY= 0) {
+                let newX = newPosition;
+
+                if (newPosition.hasOwnProperty('x')) {
+                    newX = newPosition.x;
+                } else if(newPosition.hasOwnProperty('getX')) {
+                    newX = newPosition.getX();
+                }
+
+                if (newPosition.hasOwnProperty('y')) {
+                    newY = newPosition.y;
+                } else if(newPosition.hasOwnProperty('getY')) {
+                    newY = newPosition.getY();
+                }
+
+                x = newX;
+                y = newY;
+            },
+
             getPosition() {
                 return {
                     x: this.getX(),
@@ -72,7 +91,7 @@ bsMindmapModule.factory('bsMap.Position', [function() {
     };
 
     return {
-        construct(specs) {
+        construct(specs = {}) {
             return PositionFactory(specs);
         }
     }

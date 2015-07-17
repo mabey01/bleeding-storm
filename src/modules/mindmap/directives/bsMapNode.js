@@ -9,6 +9,7 @@ bsMindmapModule.directive('bsMapNode', ['bsMap.Vector', 'bsMap.cssProperties', '
         template : '<div><ul class="addPoints"></ul><span class="content" ng-transclude></span></div>',
         link : function(scope, element, attrs) {
             const TRANSFORM_PROPERTY = vendorPrefix.getVendorProperty(element[0], 'transform');
+            const points = [{x:0.5, y:0}, {x:1, y:0.5}, {x:0.5, y:1}, {x:0, y:0.5}];
 
             let node = null;
             let nodeID = null;
@@ -21,7 +22,6 @@ bsMindmapModule.directive('bsMapNode', ['bsMap.Vector', 'bsMap.cssProperties', '
 
             let content = element.find('span');
             let addPointList = element.find('ul');
-            let points = [{x:0.5, y:0}, {x:1, y:0.5}, {x:0.5, y:1}, {x:0, y:0.5}];
             let dragPosition = {
                 x: 0,
                 y: 0
@@ -33,30 +33,26 @@ bsMindmapModule.directive('bsMapNode', ['bsMap.Vector', 'bsMap.cssProperties', '
                 content[0].focus();
             }
 
-            let setPoints = function() {
-                let boundingBox = element[0].getBoundingClientRect();
-                let height = boundingBox.height;
-                let width = boundingBox.width;
+            /**
+             * update html representation from node object
+             */
+            function update() {
+                let oldTitle = content.html();
+                let newTitle = node.getTitle();
+                if (oldTitle != newTitle) {
+                    content.html(newTitle);
+                }
+            }
 
-                points.forEach((coordinates, position) => {
-                    let point = angular.element("<li class='point'></li>");
-                    coordinates.vector = vectorFactory.construct(coordinates.x - 0.5, coordinates.y - 0.5);
+            /**
+             * create a new child node
+             * @param event
+             */
+            function createNewChild(event) {
+                event.stopPropagation();
 
-                    let right = 100 * coordinates.x;
-                    point.css('left', parseInt(right) + "%");
-
-                    let top = 100 * coordinates.y;
-                    point.css('top', parseInt(top) + "%");
-
-                    point.attr("data-position", position);
-                    addPointList.append(point);
-                });
-            };
-
-            setPoints();
-            addPointList.on("click", function (event) {
-                var originalElement = event.srcElement || event.target || event.originalTarget;
-                var position = parseInt(originalElement.getAttribute('data-position'));
+                let originalElement = event.srcElement || event.target || event.originalTarget;
+                let position = parseInt(originalElement.getAttribute('data-position'));
                 let vector = points[position].vector.getNormalizedVector();
                 vector.stretch(STRETCH_FACTOR);
 
@@ -70,7 +66,32 @@ bsMindmapModule.directive('bsMapNode', ['bsMap.Vector', 'bsMap.cssProperties', '
                 });
 
                 scope.$emit('newMapNode', newNode);
-            });
+            }
+
+            /**
+             * render points around the node
+             * @param points
+             */
+            function renderPoints(points) {
+                points.forEach((coordinates, position) => {
+                    let point = angular.element("<li class='point'></li>");
+                    coordinates.vector = vectorFactory.construct(coordinates.x - 0.5, coordinates.y - 0.5);
+
+                    let right = 100 * coordinates.x;
+                    point.css('left', parseInt(right) + "%");
+
+                    let top = 100 * coordinates.y;
+                    point.css('top', parseInt(top) + "%");
+
+                    point.attr("data-position", position);
+                    addPointList.append(point);
+                });
+            }
+
+
+            node.on("update", update);
+
+            addPointList.on("click", createNewChild);
 
             content.on('keyup', (event) => {
                 let newTitle = event.target.innerText;
@@ -96,18 +117,12 @@ bsMindmapModule.directive('bsMapNode', ['bsMap.Vector', 'bsMap.cssProperties', '
                 scope.$emit('updateNode', node);
             });
 
-            scope.$on("update", (event) => {
-                let oldTitle = content.html();
-                let newTitle = node.getTitle();
-                if (oldTitle != newTitle) {
-                    content.html(newTitle);
-                }
-            });
-
             scope.$on("$destroy", () => {
                 content.unbind();
                 element.unbind();
             });
+
+            renderPoints(points);
         }
     }
 }]);

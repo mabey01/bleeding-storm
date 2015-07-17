@@ -2,16 +2,21 @@
  * Created by Maximilian on 19.05.2015.
  */
 
-bsMindmapModule.factory('bsMindmap.MapNodeFactory', ['bsEvents.bsEventHandler', 'bsUtil.idMaker', 'bsMap.Position', 'bsMindmap.ID_LENGTH', function (bsEventHandlerFactory, idMaker, positionFactory, ID_LENGTH) {
+bsMindmapModule.factory('bsMindmap.MapNodeFactory', ['bsEvents.bsEventHandler', 'bsUtil.idGenerator', 'bsMap.Position', 'bsMindmap.ID_LENGTH', function (bsEventHandlerFactory, idGenerator, positionFactory, ID_LENGTH) {
 
-    let MapNodeFactory = function MapNodeFactory(specs) {
+    /**
+     *
+     * @param specs
+     * @returns {*}
+     * @constructor
+     */
+    function MapNodeFactory(specs) {
         let id = specs.parentID || '';
-        id += specs.id || idMaker.createID(ID_LENGTH);
+        id += specs.id || idGenerator.createID(ID_LENGTH);
 
         let title = specs.title || '';
         let children = [];
         let position = null;
-
         if ('position' in specs) {
             let specPos = specs.position;
             if (specPos.hasOwnProperty('getX')) {
@@ -24,33 +29,26 @@ bsMindmapModule.factory('bsMindmap.MapNodeFactory', ['bsEvents.bsEventHandler', 
         } else {
             position = positionFactory.construct({x : 0, y: 0})
         }
-
         let editable = specs.editable || false;
-
         return {
             getID() {
                 return id;
             },
-
             getParentID() {
                 if (id.length > ID_LENGTH) {
                     return id.substr(0, id.length - ID_LENGTH);
                 }
                 return null;
             },
-
             getTitle() {
                 return title;
             },
-
             setTitle(newTitle) {
                 title = newTitle;
             },
-
             getPosition() {
                 return position;
             },
-
             setPosition(newPosition) {
                 if ('x' in newPosition) {
                     position.x = newPosition.x;
@@ -60,7 +58,6 @@ bsMindmapModule.factory('bsMindmap.MapNodeFactory', ['bsEvents.bsEventHandler', 
                     position.y = newPosition.y;
                 }
             },
-
             moveBy(deltaPos, deltaY = 0) {
                 let deltaX = deltaPos;
 
@@ -74,11 +71,9 @@ bsMindmapModule.factory('bsMindmap.MapNodeFactory', ['bsEvents.bsEventHandler', 
 
                 position = position.moveBy(deltaX, deltaY);
             },
-
             getChildren() {
                 return children;
             },
-
             addNode(nodeSpecs) {
                 let newChild = null;
                 if ("getID" in nodeSpecs && "getTitle" in nodeSpecs) {
@@ -91,11 +86,9 @@ bsMindmapModule.factory('bsMindmap.MapNodeFactory', ['bsEvents.bsEventHandler', 
                 children.push(newChild);
                 return newChild;
             },
-
             isEditable() {
                 return editable;
             },
-
             update(updateObject) {
                 if ("title" in updateObject) {
                     this.setTitle(updateObject.title);
@@ -105,7 +98,6 @@ bsMindmapModule.factory('bsMindmap.MapNodeFactory', ['bsEvents.bsEventHandler', 
                     this.getPosition().setPosition(updateObject.position);
                 }
             },
-
             serialize() {
                 return {
                     title : this.getTitle(),
@@ -113,12 +105,11 @@ bsMindmapModule.factory('bsMindmap.MapNodeFactory', ['bsEvents.bsEventHandler', 
                     id : this.getID()
                 }
             },
-
             getCopy() {
                 return MapNodeFactory(this.serialize())
             }
         }
-    };
+    }
 
     return {
         construct(specs) {

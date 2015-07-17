@@ -4,15 +4,18 @@
 
 bsMindmapModule.factory('bsMindmap.MapFactory', ['bsMindmap.MapNodeFactory', 'bsMindmap.ID_LENGTH', function (mindmapNodeFactory, ID_LENGTH) {
 
-    let MapFactory = function (specs) {
-        console.log(specs);
+    /**
+     *
+     * @param specs
+     * @returns {*}
+     * @constructor
+     */
+    function MapFactory(specs) {
         let root = mindmapNodeFactory.construct(specs);
-
         return {
             getRoot() {
                 return root
             },
-
             getNodeByID(id, node = this.getRoot()) {
                 let parentID = null;
                 let childID = null;
@@ -38,19 +41,17 @@ bsMindmapModule.factory('bsMindmap.MapFactory', ['bsMindmap.MapNodeFactory', 'bs
                     }, null)
                 }
             },
-
             insertRawNode(rawNodeSpecs) {
                 let newNode = mindmapNodeFactory.construct(rawNodeSpecs);
                 let parent = this.getNodeByID(newNode.getParentID());
                 parent.addNode(newNode);
             },
-
             updateRawNode(updatedNodeSpecs) {
                 let oldNode = this.getNodeByID(updatedNodeSpecs.id);
                 oldNode.update(updatedNodeSpecs);
             }
         }
-    };
+    }
 
     return {
         construct(specs) {

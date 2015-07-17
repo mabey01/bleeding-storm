@@ -56,13 +56,13 @@ bsMindmapModule.directive('bsMap', ['$compile', 'bsMindmap.MAP_DIMENSIONS', 'bsM
 
                 session.on('newNode', (rawNodeSpecs) => {
                     session.insertRawNode(rawNodeSpecs);
-                    drawNode(session.getRoot());
+                    renderNode(session.getRoot());
                 });
 
                 session.on('updateNode', (rawNodeSpecs) => {
                     let oldNode = session.getNodeByID(rawNodeSpecs.id);
                     oldNode.update(rawNodeSpecs);
-                    drawNode(session.getRoot());
+                    renderNode(session.getRoot());
                     scope.$broadcast('update');
                 })
             });
@@ -70,14 +70,18 @@ bsMindmapModule.directive('bsMap', ['$compile', 'bsMindmap.MAP_DIMENSIONS', 'bsM
 
             let nodeCache = [];
 
-            function adjustPosition(position) {
-                let deltaX = parseInt(MAP_WIDTH / 2);
-                let deltaY = parseInt(MAP_HEIGHT / 2);
-                return position.moveBy(deltaX, deltaY);
-            }
+            /**
+             * render a mapNode by providing the node object
+             * @param node
+             */
+            function renderNode(node) {
+                function adjustPosition(position) {
+                    let deltaX = parseInt(MAP_WIDTH / 2);
+                    let deltaY = parseInt(MAP_HEIGHT / 2);
+                    return position.moveBy(deltaX, deltaY);
+                }
 
-            function drawNode(node) {
-                let displayNode = function (node, position, adjustmentNedded = false) {
+                function displayNode(node, position, adjustmentNedded = false) {
                     if (adjustmentNedded) position = adjustPosition(position);
                     node.addClass('hide node');
                     map.append(node);
@@ -88,21 +92,20 @@ bsMindmapModule.directive('bsMap', ['$compile', 'bsMindmap.MAP_DIMENSIONS', 'bsM
                     });
 
                     node.removeClass('hide');
-                };
-
-                let oldNode = nodeCache[node.getID()];
-                if (oldNode) {
-
-                } else {
-                    nodeCache[node.getID()] = node.getCopy();
-                    let newNode = angular.element(`<bs-map-node class="${node.isEditable() ? 'editable bs-draggable' : 'nonEditable'}" node-id="${node.getID()}"></bs-map-node>`);
-                    displayNode(newNode, node.getPosition(), true);
-                    compile(newNode)(scope);
                 }
+                nodeCache[node.getID()] = node.getCopy();
+                let newNode = angular.element(`<bs-map-node class="${node.isEditable() ? 'editable bs-draggable' : 'nonEditable'}" node-id="${node.getID()}"></bs-map-node>`);
+                displayNode(newNode, node.getPosition(), true);
+                compile(newNode)(scope);
+            }
 
-                node.getChildren().forEach((node) => {
-                    drawNode(node);
-                });
+            /**
+             * render the whole map by providing the rootNode
+             * @param node
+             */
+            function renderMap(node) {
+                renderNode(node);
+                node.getChildren().forEach((child) => renderMap(child));
             }
 
             attrs.$observe('isEditible', function(value, oldValue){
@@ -115,7 +118,7 @@ bsMindmapModule.directive('bsMap', ['$compile', 'bsMindmap.MAP_DIMENSIONS', 'bsM
                 console.log("============= MAP ==============");
                 logMap(session.getRoot());
                 console.log("========= MAP END ==============");
-                drawNode(session.getRoot());
+                renderNode(session.getRoot());
             });
 
             scope.$on('updateNode', (event, updatedNode) => {
@@ -124,7 +127,7 @@ bsMindmapModule.directive('bsMap', ['$compile', 'bsMindmap.MAP_DIMENSIONS', 'bsM
 
 
 
-            drawNode(session.getRoot());
+            renderNode(session.getRoot());
         }
     }
 }]);

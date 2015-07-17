@@ -2,7 +2,7 @@
  * Created by Maximilian on 06.05.2015.
  */
 
-bsSessionModule.provider('bsSession.SessionRegistry', [function () {
+bsSessionModule.provider('bsSession.sessionRegistry', [function () {
 
     var sessions = {};
 
