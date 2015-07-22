@@ -1,23 +1,23 @@
 <!--FIRST STEP -->
 <div ng-if="!submitted && !done">
     <form bs-forms-submit="submit(form)">
-        <h2>Create new Session</h2>
-        <label for="newSession_topic">Topic</label>
-        <input id="newSession_topic" type="text" name="topic" value="Testing">
+        <h2 translate="CREATE_SESSION.HEADLINE">Create new Session</h2>
+        <label for="newSession_topic" translate="CREATE_SESSION.TOPIC"></label>
+        <input id="newSession_topic" type="text" name="topic" value="Testing" required>
 
-        <label for="newSession_description">Description</label>
+        <label for="newSession_description" translate="CREATE_SESSION.DESCRIPTION"></label>
         <textarea id="newSession_description" name="description"></textarea>
 
-        <label for="newSession_date">Date</label>
-        <input id="newSession_date" type="date" name="date" value="2015-05-08">
+        <label for="newSession_date" translate="CREATE_SESSION.DATE"></label>
+        <input id="newSession_date" type="date" name="date" required>
 
-        <label for="newSession_startimTime">Time</label>
-        <input id="newSession_startimTime" type="time" name="startingTime" value="10:13">
+        <label for="newSession_startimTime" translate="CREATE_SESSION.TIME"></label>
+        <input id="newSession_startimTime" type="time" name="startingTime" required>
 
-        <label for="newSession_duration">Duration</label>
-        <input id="newSession_duration" type="time" name="duration" value="00:30">
+        <label for="newSession_duration" translate="CREATE_SESSION.DURATION"></label>
+        <input id="newSession_duration" type="time" name="duration" value="00:30" required>
 
-        <button type="submit">Create</button>
+        <button type="submit" translate="CREATE_SESSION.CREATE"></button>
     </form>
 </div>
 
@@ -29,7 +29,14 @@
 <!--THIRD STEP-->
 <div ng-if="newSession">
     <p>
-        Your Session was successfully created! Here is the link to your session : <a href="{{::newSession.getLink()}}">{{::newSession.getLink()}}</a>
+        <span translate="CREATE_SESSION.CONFIRMATION"></span>: <a href="{{::newSession.getLink()}}">{{::newSession.getLink()}}</a>
     </p>
-    <button ng-click="createAnother()">Create another Session</button>
+    <button ng-click="createAnother()" translate="CREATE_SESSION.CREATE_ANOTHER"></button>
+</div>
+
+<!--THIRD STEP-->
+<div ng-if="error">
+    <p>
+        {{::error}}
+    </p>
 </div>

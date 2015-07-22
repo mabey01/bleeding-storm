@@ -6,7 +6,7 @@ bsSessionModule.provider('bsSession.sessionRegistry', [function () {
 
     var sessions = {};
 
-    this.$get = ['$http', '$backendURL', '$q', 'bsSession.SessionFactory', function (http, backendURL, q, sessionFactory) {
+    this.$get = ['$http', '$backendURL', '$q', 'bsSession.bsSessionFactory', function (http, backendURL, q, sessionFactory) {
 
         var constructSession = function (rawSession) {
             var newSession = sessionFactory.construct(rawSession);

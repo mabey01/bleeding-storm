@@ -1,5 +1,5 @@
 <div class="session">
-    <div class="information" ng-if="!session.isActive()">
+    <div class="information" ng-if="!session.isActive() && !session.isExpired()">
         <div class="topic">
             Topic: <strong title="topic">{{::session.getTopic()}}</strong>
         </div>
@@ -11,5 +11,5 @@
         </div>
     </div>
 
-    <bs-map session="session" ng-if="session.isExpired()" is-editible="{{session.isActive()}}"></bs-map>
+    <bs-map session="session" ng-if="session.isActive() || session.isExpired()" is-editible="{{session.isActive()}}"></bs-map>
 </div>

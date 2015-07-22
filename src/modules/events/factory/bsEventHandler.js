@@ -6,14 +6,13 @@ bsEventsModule.factory('bsEvents.bsEventHandler', [function () {
 
     function bsEventHandlerFactory(specs) {
         let listeners = {};
+        let universalCallbacks = [];
 
         return {
             on(eventName, callback) {
-                if (!angular.isString(callback)) throw new Error('eventNme is not a String');
+                if (!angular.isString(eventName)) throw new Error('eventName is not a String');
                 if (!angular.isFunction(callback)) throw new Error('callback is not a function');
 
-
-                console.log(callback.toString());
                 if (eventName in listeners) {
                     listeners[eventName].push(callback);
                 } else {
@@ -21,18 +20,31 @@ bsEventsModule.factory('bsEvents.bsEventHandler', [function () {
                 }
             },
 
+            onAll(callback) {
+                universalCallbacks.push(callback);
+            },
+
             off(eventName, callback) {
 
             },
 
-            unbindAll() {
+            offAll() {
                 listeners = {};
+                universalCallbacks = [];
             },
 
-            _trigger(eventName, data) {
+            bubbleEvents(object) {
+                object.onAll((eventName, ...data) => this._trigger(eventName, ...data));
+            },
+
+            _trigger(eventName, ...data) {
                 if (eventName in listeners) {
-                    listeners[eventName].forEach((callback) => callback(data));
+                    listeners[eventName].forEach((callback) => callback(...data));
                 }
+
+                universalCallbacks.forEach((callback) => {
+                    callback(eventName, ...data);
+                })
             }
         }
     }

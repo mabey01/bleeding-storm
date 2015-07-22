@@ -74,9 +74,7 @@ bsMindmapModule.directive('bsDraggable', ['bsUtil.touchSupport', function (touch
 
                 let dragEvent = new MouseEvent("drag", event);
 
-                console.log(screenCoordinates);
                 dragEvent.movement = getMovement(screenCoordinates);
-                console.log(dragEvent.movement);
                 dragEvent.drag = getNewDragCoordinates(screenCoordinates);
                 dragTagret.dispatchEvent(dragEvent);
             }

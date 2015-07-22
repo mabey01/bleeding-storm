@@ -2,23 +2,23 @@
  * Created by Maximilian on 06.05.2015.
  */
 
-bsUtilModule.directive('bsCountdown', [function () {
+bsUtilModule.directive('bsCountdown', ['$translate', function (translate) {
 
-    let parseTime = function(timeString) {
+    function parseTime(timeString) {
         let time = Date.parse(timeString);
 
         if (time.prototype != 'Date') {
-            time = new Date(timeString)
+            time = new Date(timeString);
         }
 
         if (time.prototype != 'Date') {
-            time = new Date(parseInt(timeString))
+            time = new Date(parseInt(timeString));
         }
 
         return time;
-    };
+    }
 
-    let formatTime = function(time) {
+    function formatTime(time) {
         let helpTime = time;
 
         let days = parseInt(helpTime / (24*60*60*1000));
@@ -45,26 +45,41 @@ bsUtilModule.directive('bsCountdown', [function () {
         else if (seconds <= 9) timeString += '0' + seconds + 's';
 
         return timeString;
-    };
+    }
 
     return {
         restrict : 'E',
         link : function (scope, element, attrs) {
-            let display = (string) => {
+            let interval = null;
+            function display(string) {
                 if (!angular.isString(string)) string = string.toString();
                 element[0].innerHTML = string;
-            };
-
-            let countdownTo = parseTime(attrs.to);
-            let timeLeft = countdownTo.getTime() - Date.now();
-            if (timeLeft < 0 ) return display('Countdown expired');
-            else {
-                display(formatTime(timeLeft));
-                setInterval(() => {
-                    timeLeft -= 1000;
-                    display(formatTime(timeLeft));
-                }, 1000)
             }
+
+            function countdownExpired() {
+                clearInterval(interval);
+                translate('COUNTDOWN_EXPIRED').then(function (translation) {
+                    display(translation);
+                });
+            }
+
+            function startCountdown (countdownTime) {
+                clearInterval(interval);
+                let timeLeft = countdownTime.getTime() - Date.now();
+                if (timeLeft < 0 ) return countdownExpired();
+                else {
+                    display(formatTime(timeLeft));
+                    interval = setInterval(() => {
+                        timeLeft -= 1000;
+                        if (timeLeft < 0 ) return countdownExpired();
+                        display(formatTime(timeLeft));
+                    }, 1000)
+                }
+            }
+
+            attrs.$observe("to", (newValue) => {
+                startCountdown(parseTime(newValue));
+            });
         }
     }
 }]);

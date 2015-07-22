@@ -22,8 +22,7 @@ bsMindmapModule.directive('bsMap', ['$compile', 'bsMindmap.MAP_DIMENSIONS', 'bsM
     return {
         restrict : 'E',
         scope : {
-            session : '=',
-            isEditible : '@'
+            session : '='
         },
         templateUrl : 'templates/mindmap/directives/bsMap.tpl.html',
         link (scope, element, attrs) {
@@ -38,36 +37,6 @@ bsMindmapModule.directive('bsMap', ['$compile', 'bsMindmap.MAP_DIMENSIONS', 'bsM
                 height: MAP_HEIGHT + "px"
             });
 
-            session.setupConnection().then(() => {
-                let count = 1;
-                session.on('numberOfUsers', (newCount) => {
-                    count = newCount;
-                });
-
-                session.on('joinedUser', () => {
-                    count++;
-                    alert("Number of Users: " + count);
-                });
-
-                session.on('leftUser', () => {
-                    count--;
-                    alert("Number of Users: " + count);
-                });
-
-                session.on('newNode', (rawNodeSpecs) => {
-                    session.insertRawNode(rawNodeSpecs);
-                    renderNode(session.getRoot());
-                });
-
-                session.on('updateNode', (rawNodeSpecs) => {
-                    let oldNode = session.getNodeByID(rawNodeSpecs.id);
-                    oldNode.update(rawNodeSpecs);
-                    renderNode(session.getRoot());
-                    scope.$broadcast('update');
-                })
-            });
-
-
             let nodeCache = [];
 
             /**
@@ -75,27 +44,20 @@ bsMindmapModule.directive('bsMap', ['$compile', 'bsMindmap.MAP_DIMENSIONS', 'bsM
              * @param node
              */
             function renderNode(node) {
-                function adjustPosition(position) {
-                    let deltaX = parseInt(MAP_WIDTH / 2);
-                    let deltaY = parseInt(MAP_HEIGHT / 2);
-                    return position.moveBy(deltaX, deltaY);
-                }
-
-                function displayNode(node, position, adjustmentNedded = false) {
-                    if (adjustmentNedded) position = adjustPosition(position);
-                    node.addClass('hide node');
+                function displayNode(node) {
+                    node.addClass('hide');
                     map.append(node);
 
                     node.css({
-                        left : Math.round(position.getX()) + 'px',
-                        top : Math.round(position.getY()) + 'px'
+                        left : parseInt(MAP_WIDTH / 2) + 'px',
+                        top : parseInt(MAP_HEIGHT / 2) + 'px'
                     });
 
                     node.removeClass('hide');
                 }
                 nodeCache[node.getID()] = node.getCopy();
-                let newNode = angular.element(`<bs-map-node class="${node.isEditable() ? 'editable bs-draggable' : 'nonEditable'}" node-id="${node.getID()}"></bs-map-node>`);
-                displayNode(newNode, node.getPosition(), true);
+                let newNode = angular.element(`<bs-map-node class="node ${node.isEditable() ? 'editable bs-draggable' : 'nonEditable'}" node-id="${node.getID()}"></bs-map-node>`);
+                displayNode(newNode);
                 compile(newNode)(scope);
             }
 
@@ -108,26 +70,20 @@ bsMindmapModule.directive('bsMap', ['$compile', 'bsMindmap.MAP_DIMENSIONS', 'bsM
                 node.getChildren().forEach((child) => renderMap(child));
             }
 
-            attrs.$observe('isEditible', function(value, oldValue){
-
-            });
-
             scope.getNodeByID = session.getNodeByID.bind(session);
-            scope.$on('newMapNode', (event, newNode) => {
-                session.emit("newNode", newNode.serialize());
-                console.log("============= MAP ==============");
-                logMap(session.getRoot());
-                console.log("========= MAP END ==============");
-                renderNode(session.getRoot());
+
+            session.startActiveSession();
+            session.on("newNode", (newNode) => {
+                console.log(newNode);
+                renderNode(newNode);
             });
 
-            scope.$on('updateNode', (event, updatedNode) => {
-                session.emit("updateNode", updatedNode.serialize());
+            if (attrs.isEditible === 'false') scope.$emit("mapNonEditable");
+            attrs.$observe('isEditible', (newVal, oldValue) => {
+                if (newVal === "false") scope.$emit("mapNonEditable");
             });
 
-
-
-            renderNode(session.getRoot());
+            renderMap(session.getRoot());
         }
     }
 }]);

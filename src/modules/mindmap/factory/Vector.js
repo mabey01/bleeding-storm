@@ -2,7 +2,7 @@
  * Created by Maximilian on 02.07.2015.
  */
 
-bsMindmapModule.factory('bsMap.Vector', [function() {
+bsMindmapModule.factory('bsMindmap.bsVectorFactory', [function() {
 
     let VectorFactory = function Vector(x,y,z) {
         return {

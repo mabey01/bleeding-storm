@@ -2,7 +2,7 @@
  * Created by Maximilian on 19.05.2015.
  */
 
-bsMindmapModule.factory('bsMindmap.MapNodeFactory', ['bsEvents.bsEventHandler', 'bsUtil.idGenerator', 'bsMap.Position', 'bsMindmap.ID_LENGTH', function (bsEventHandlerFactory, idGenerator, positionFactory, ID_LENGTH) {
+bsMindmapModule.factory('bsMindmap.bsMapNodeFactory', ['bsEvents.bsEventHandler', 'bsUtil.idGenerator', 'bsMindmap.bsPositionFactory', 'bsMindmap.ID_LENGTH', function (bsEventHandlerFactory, idGenerator, positionFactory, ID_LENGTH) {
 
     /**
      *
@@ -10,12 +10,22 @@ bsMindmapModule.factory('bsMindmap.MapNodeFactory', ['bsEvents.bsEventHandler', 
      * @returns {*}
      * @constructor
      */
-    function MapNodeFactory(specs) {
-        let id = specs.parentID || '';
-        id += specs.id || idGenerator.createID(ID_LENGTH);
+    function MapNodeFactory(specs = {}) {
+        let id = null;
+        if ('id' in specs) {
+            id = specs.id;
+        } else if ('parentID' in specs) {
+            id = specs.parentID + idGenerator.createID(ID_LENGTH);
+        }
 
         let title = specs.title || '';
         let children = [];
+        if ('children' in specs) {
+            children = specs.children.map((childSpecs) => {
+                return MapNodeFactory(childSpecs);
+            })
+        }
+
         let position = null;
         if ('position' in specs) {
             let specPos = specs.position;
@@ -30,7 +40,9 @@ bsMindmapModule.factory('bsMindmap.MapNodeFactory', ['bsEvents.bsEventHandler', 
             position = positionFactory.construct({x : 0, y: 0})
         }
         let editable = specs.editable || false;
-        return {
+
+        let bsEventHandler = bsEventHandlerFactory.construct();
+        let newMapNode =  {
             getID() {
                 return id;
             },
@@ -43,8 +55,9 @@ bsMindmapModule.factory('bsMindmap.MapNodeFactory', ['bsEvents.bsEventHandler', 
             getTitle() {
                 return title;
             },
-            setTitle(newTitle) {
+            setTitle(newTitle, fireUpdate = true) {
                 title = newTitle;
+                if (fireUpdate) this._trigger('updateNode', this);
             },
             getPosition() {
                 return position;
@@ -70,11 +83,25 @@ bsMindmapModule.factory('bsMindmap.MapNodeFactory', ['bsEvents.bsEventHandler', 
                 }
 
                 position = position.moveBy(deltaX, deltaY);
+                this._trigger('updateNode', this);
+                return position;
             },
             getChildren() {
                 return children;
             },
-            addNode(nodeSpecs) {
+
+            isChild(child) {
+                let id = child;
+                if ('getID' in child) {
+                    id = child.getID();
+                }
+
+                return children.reduce((prev, child) => {
+                    if (prev) return prev;
+                    return child.getID() === id;
+                }, false)
+            },
+            addNode(nodeSpecs, fromExtern = false) {
                 let newChild = null;
                 if ("getID" in nodeSpecs && "getTitle" in nodeSpecs) {
                     newChild = nodeSpecs;
@@ -84,19 +111,24 @@ bsMindmapModule.factory('bsMindmap.MapNodeFactory', ['bsEvents.bsEventHandler', 
                 }
 
                 children.push(newChild);
+                this.bubbleEvents(newChild);
+
+                this._trigger('newNode', newChild, fromExtern);
                 return newChild;
             },
             isEditable() {
                 return editable;
             },
-            update(updateObject) {
+            update(updateObject, fromExtern = false) {
                 if ("title" in updateObject) {
-                    this.setTitle(updateObject.title);
+                    this.setTitle(updateObject.title, false);
                 }
 
                 if("position" in updateObject) {
                     this.getPosition().setPosition(updateObject.position);
                 }
+
+                this._trigger('updateNode', this, fromExtern);
             },
             serialize() {
                 return {
@@ -108,15 +140,17 @@ bsMindmapModule.factory('bsMindmap.MapNodeFactory', ['bsEvents.bsEventHandler', 
             getCopy() {
                 return MapNodeFactory(this.serialize())
             }
-        }
+        };
+
+        let newObj =  Object.assign(Object.create(bsEventHandler), newMapNode);
+        newObj.getChildren().forEach((child) => {
+            newObj.bubbleEvents(child);
+        })
+
+        return newObj;
     }
 
     return {
-        construct(specs) {
-            let bsEventHandler = bsEventHandlerFactory.construct();
-            let node = MapNodeFactory(specs);
-
-            return Object.assign(Object.create(bsEventHandler), node);
-        }
+        construct : MapNodeFactory
     };
 }]);

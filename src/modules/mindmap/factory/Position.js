@@ -2,7 +2,7 @@
  * Created by Maximilian on 02.07.2015.
  */
 
-bsMindmapModule.factory('bsMap.Position', [function() {
+bsMindmapModule.factory('bsMindmap.bsPositionFactory', [function() {
 
     let PositionFactory = function PositionFactory(specs) {
         let x = specs.x || 0;
@@ -51,15 +51,35 @@ bsMindmapModule.factory('bsMap.Position', [function() {
                 let deltaX = deltaPosition;
 
                 if(deltaPosition.hasOwnProperty('getX')) {
-                    deltaX = position.getX();
+                    deltaX = deltaPosition.getX();
                 }
 
                 if (deltaPosition.hasOwnProperty('getY')) {
-                    deltaY = position.getY();
+                    deltaY = deltaPosition.getY();
                 }
 
                 let newX = this.getX() + parseInt(deltaX);
                 let newY = this.getY() + parseInt(deltaY);
+
+                return PositionFactory({
+                    x : newX,
+                    y : newY
+                });
+            },
+
+            subtract(position, deltaY = 0) {
+                let deltaX = position;
+
+                if(position.hasOwnProperty('getX')) {
+                    deltaX = position.getX();
+                }
+
+                if (position.hasOwnProperty('getY')) {
+                    deltaY = position.getY();
+                }
+
+                let newX = this.getX() - parseInt(deltaX);
+                let newY = this.getY() - parseInt(deltaY);
 
                 return PositionFactory({
                     x : newX,
