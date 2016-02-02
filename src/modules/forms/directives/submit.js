@@ -4,12 +4,23 @@
 
 bsFormsModule.directive('bsFormsSubmit', [function() {
 
+    /**
+     * strip all space from string
+     * @param {String} string
+     * @returns {*}
+     */
     var stripSpace = function(string) {
         let newString = string.replace(' ', '');
         if (newString != string) return stripSpace(newString);
         else return newString;
     };
 
+    /**
+     * select all elements from document by selectors
+     * @param {HTMLElement} document
+     * @param {Array.<String>} selectors
+     * @returns {Array.<HTMLElement>}
+     */
     var selectAll = function(document, ...selectors) {
         let selectedNodes = [];
         selectors.forEach(function(selector) {

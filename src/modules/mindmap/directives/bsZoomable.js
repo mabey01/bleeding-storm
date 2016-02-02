@@ -2,7 +2,7 @@
  * Created by Maximilian on 20.05.2015.
  */
 
-bsMindmapModule.directive('bsZoomable', function () {
+bsMindmapModule.directive('bsZoomable', ['bsUtil.bsEvent', function (bsEventFactory) {
     return {
         restrict : 'AC',
         priority : 100,
@@ -12,7 +12,7 @@ bsMindmapModule.directive('bsZoomable', function () {
             let scale = 1;
 
             element.on('mousewheel DOMMouseScroll', function (e) {
-                let direction = e.wheelDelta || e.detail;
+                let direction = e.wheelDeltaY || e.wheelDelta || (e.detail * -1);
 
                 if (direction > 0) {
                     scale *= (factor + 1);
@@ -21,11 +21,11 @@ bsMindmapModule.directive('bsZoomable', function () {
                 }
 
                 if (scale <= 0) scale = 0.01;
-                let newZoomEvent = new MouseEvent('zoom', e);
+                let newZoomEvent = bsEventFactory.construct('zoom', e);
                 newZoomEvent.scale = scale;
 
                 this.dispatchEvent(newZoomEvent);
             })
         }
     }
-});
+}]);

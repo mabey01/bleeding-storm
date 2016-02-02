@@ -37,11 +37,10 @@ bsMindmapModule.directive('bsMap', ['$compile', 'bsMindmap.MAP_DIMENSIONS', 'bsM
                 height: MAP_HEIGHT + "px"
             });
 
-            let nodeCache = [];
 
             /**
              * render a mapNode by providing the node object
-             * @param node
+             * @param {MapNode} node
              */
             function renderNode(node) {
                 function displayNode(node) {
@@ -55,7 +54,6 @@ bsMindmapModule.directive('bsMap', ['$compile', 'bsMindmap.MAP_DIMENSIONS', 'bsM
 
                     node.removeClass('hide');
                 }
-                nodeCache[node.getID()] = node.getCopy();
                 let newNode = angular.element(`<bs-map-node class="node ${node.isEditable() ? 'editable bs-draggable' : 'nonEditable'}" node-id="${node.getID()}"></bs-map-node>`);
                 displayNode(newNode);
                 compile(newNode)(scope);
@@ -63,7 +61,7 @@ bsMindmapModule.directive('bsMap', ['$compile', 'bsMindmap.MAP_DIMENSIONS', 'bsM
 
             /**
              * render the whole map by providing the rootNode
-             * @param node
+             * @param {MapNode} node
              */
             function renderMap(node) {
                 renderNode(node);
@@ -72,15 +70,17 @@ bsMindmapModule.directive('bsMap', ['$compile', 'bsMindmap.MAP_DIMENSIONS', 'bsM
 
             scope.getNodeByID = session.getNodeByID.bind(session);
 
-            session.startActiveSession();
             session.on("newNode", (newNode) => {
-                console.log(newNode);
                 renderNode(newNode);
             });
 
             if (attrs.isEditible === 'false') scope.$emit("mapNonEditable");
             attrs.$observe('isEditible', (newVal, oldValue) => {
-                if (newVal === "false") scope.$emit("mapNonEditable");
+                if (newVal === "false") scope.$emit("freeze");
+            });
+
+            scope.$on("$destroy", () => {
+                session.suspendSession();
             });
 
             renderMap(session.getRoot());

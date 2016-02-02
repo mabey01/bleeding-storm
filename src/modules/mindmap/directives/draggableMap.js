@@ -19,12 +19,16 @@ bsMindmapModule.directive('bsDraggableMap', ['bsMap.cssProperties', function (ve
                 y : 0
             };
             let scale = 1;
+
+            /**
+             * adjust map layer to drag and scale
+             */
             let adjustLayer = function () {
                 let x = parseInt(initTranslate.x + translate.x);
                 let y = parseInt(initTranslate.y + translate.y);
                 let realScale = Math.round(scale * 100) / 100;
 
-                map.style[cssTransform] = `translate(${x}px,${y}px) scale(${realScale})`;
+                map.style[cssTransform] = `translate3d(${x}px,${y}px, 0) scale(${realScale})`;
             };
 
             element.on('drag', (e) => {
@@ -32,6 +36,7 @@ bsMindmapModule.directive('bsDraggableMap', ['bsMap.cssProperties', function (ve
                 translate.y += e.movement.y;
                 adjustLayer();
             });
+
             element.on('zoom', function (e) {
                 scale = e.scale;
                 adjustLayer();

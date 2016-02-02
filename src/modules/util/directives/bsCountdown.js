@@ -2,8 +2,13 @@
  * Created by Maximilian on 06.05.2015.
  */
 
-bsUtilModule.directive('bsCountdown', ['$translate', function (translate) {
+bsUtilModule.directive('bsCountdown', ['$translate', 'bsUtil.bsServerTime', function (translate, bsServerTime) {
 
+    /**
+     * parse timestamp form string
+     * @param {String} timeString
+     * @returns {Number}
+     */
     function parseTime(timeString) {
         let time = Date.parse(timeString);
 
@@ -18,6 +23,11 @@ bsUtilModule.directive('bsCountdown', ['$translate', function (translate) {
         return time;
     }
 
+    /**
+     * format timestamp to string
+     * @param {Number} time
+     * @returns {string}
+     */
     function formatTime(time) {
         let helpTime = time;
 
@@ -65,15 +75,22 @@ bsUtilModule.directive('bsCountdown', ['$translate', function (translate) {
 
             function startCountdown (countdownTime) {
                 clearInterval(interval);
-                let timeLeft = countdownTime.getTime() - Date.now();
+                let timeLeft = countdownTime.getTime() - bsServerTime.now();
                 if (timeLeft < 0 ) return countdownExpired();
                 else {
-                    display(formatTime(timeLeft));
-                    interval = setInterval(() => {
-                        timeLeft -= 1000;
-                        if (timeLeft < 0 ) return countdownExpired();
+                    let waitForFullSecond = timeLeft % 1000;
+                    let tick = (timeElapsed) => {
+                        timeLeft -= timeElapsed;
+                        if (timeLeft <= 0 ) return countdownExpired();
                         display(formatTime(timeLeft));
-                    }, 1000)
+                    };
+
+                    setTimeout(() => {
+                        tick(waitForFullSecond);
+                        interval = setInterval(tick.bind(null, 1000), 1000)
+                    }, waitForFullSecond);
+
+                    display(formatTime(timeLeft));
                 }
             }
 

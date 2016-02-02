@@ -2,7 +2,7 @@
  * Created by Maximilian on 20.05.2015.
  */
 
-bsMindmapModule.directive('bsMapNode', ['bsMindmap.bsVectorFactory', 'bsMap.cssProperties', 'bsMindmap.VECTOR_STRETCH_FACTOR', function (vectorFactory, vendorPrefix, STRETCH_FACTOR) {
+bsMindmapModule.directive('bsMapNode', ['bsMindmap.bsVectorFactory', 'bsMap.cssProperties', 'bsMindmap.VECTOR_STRETCH_FACTOR', 'bsUtil.touchSupport', function (vectorFactory, vendorPrefix, STRETCH_FACTOR, bsTouchSupport) {
     return {
         restrict : 'E',
         transclude: true,
@@ -35,6 +35,11 @@ bsMindmapModule.directive('bsMapNode', ['bsMindmap.bsVectorFactory', 'bsMap.cssP
                 content.on('keyup', setNewTitle);
                 element.on('drag', setNewPosition);
             }
+
+            if (bsTouchSupport.isTouchSupported()) {
+                element.addClass('touch');
+            }
+
             /**
              * update html representation from node object
              */
@@ -45,6 +50,9 @@ bsMindmapModule.directive('bsMapNode', ['bsMindmap.bsVectorFactory', 'bsMap.cssP
                 updatePosition(position);
             }
 
+            /**
+             * update Title from MapNode Object
+             */
             function updateTitle() {
                 let oldTitle = content.html();
                 let newTitle = node.getTitle();
@@ -53,16 +61,21 @@ bsMindmapModule.directive('bsMapNode', ['bsMindmap.bsVectorFactory', 'bsMap.cssP
                 }
             }
 
+            /**
+             * update position
+             * @param {bsPosition} position
+             */
             function updatePosition(position) {
                 connectionsUpdates.forEach((updateFN) => updateFN());
-                element[0].style[TRANSFORM_PROPERTY] = `translate(-50%, -50%) translate(${position.getX()}px,${position.getY()}px)`;
+                element[0].style[TRANSFORM_PROPERTY] = `translate(-50%, -50%) translate3d(${position.getX()}px,${position.getY()}px,0)`;
             }
 
             /**
              * create a new child node
-             * @param event
+             * @param {Event} event
              */
             function createNewChild(event) {
+                event.preventDefault();
                 event.stopPropagation();
 
                 let originalElement = event.srcElement || event.target || event.originalTarget;
@@ -83,7 +96,7 @@ bsMindmapModule.directive('bsMapNode', ['bsMindmap.bsVectorFactory', 'bsMap.cssP
 
             /**
              * render points around the node
-             * @param points
+             * @param {Array} points
              */
             function renderPoints(points) {
                 points.forEach((coordinates, position) => {
@@ -101,6 +114,10 @@ bsMindmapModule.directive('bsMapNode', ['bsMindmap.bsVectorFactory', 'bsMap.cssP
                 });
             }
 
+            /**
+             * render a single connection to a child MapNode
+             * @param {MapNode} child
+             */
             function renderConnection(child) {
                 let svg = document.createElementNS(svgNS,'svg');
                 var arrowPath = document.createElementNS(svgNS,'path');
@@ -126,11 +143,22 @@ bsMindmapModule.directive('bsMapNode', ['bsMindmap.bsVectorFactory', 'bsMap.cssP
                 element[0].appendChild(svg);
             }
 
+            /**
+             * set new title from keyup event
+             * @param {Event} event
+             */
             function setNewTitle(event) {
-                let newTitle = event.target.innerText;
+                let target = event.target;
+                let newTitle = target.innerHTML;
+
+                newTitle = newTitle.replace(/<br>/g, '\n');
                 node.setTitle(newTitle);
             }
 
+            /**
+             * set new Position from drag event
+             * @param {Event} event
+             */
             function setNewPosition(event) {
                 event.stopPropagation();
                 let newPosition = node.moveBy(event.movement);
@@ -155,9 +183,11 @@ bsMindmapModule.directive('bsMapNode', ['bsMindmap.bsVectorFactory', 'bsMap.cssP
                 }
             });
 
-            scope.$on("mapNonEditable", () => {
+            scope.$on("freeze", () => {
+                element.addClass('freeze');
                 addPointList.unbind();
                 content.unbind();
+                content[0].removeAttribute('contenteditable');
                 element.unbind();
             });
 

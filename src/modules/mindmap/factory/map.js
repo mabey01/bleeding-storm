@@ -5,9 +5,21 @@
 bsMindmapModule.factory('bsMindmap.bsMapFactory', ['bsMindmap.bsMapNodeFactory', 'bsEvents.bsEventHandler', 'bsSocket.bsSocket', 'bsMindmap.ID_LENGTH', function (mindmapNodeFactory, eventHandlerFactory, bsSockets, ID_LENGTH) {
 
     /**
+     @class Map
+     @type {Object}
+     @property {function(): MapNode} getRoot
+     @property {function(String): MapNode} getNodeByID
+     @property {function(Object)} insertRawNode
+     @property {function(Object)} updateRawNode
+     @property {function()} startActiveSession
+     @property {function()} suspendSession
+     @property {function(): Number} getActiveUser
+     */
+
+    /**
      *
-     * @param specs
-     * @returns {*}
+     * @param {Object=} specs
+     * @returns {Map}
      * @constructor
      */
     function MapFactory(specs = {}) {
@@ -16,9 +28,20 @@ bsMindmapModule.factory('bsMindmap.bsMapFactory', ['bsMindmap.bsMapNodeFactory',
 
         let bsEventHandler = eventHandlerFactory.construct();
         let newMap = {
+            /**
+             * get root MapNode of Map
+             * @returns {MapNode}
+             */
             getRoot() {
                 return root
             },
+
+            /**
+             * get MapNode by id
+             * @param {String} id
+             * @param {MapNode=} node
+             * @return {MapNode}
+             */
             getNodeByID(id, node = this.getRoot()) {
                 let parentID = null;
                 let childID = null;
@@ -44,27 +67,41 @@ bsMindmapModule.factory('bsMindmap.bsMapFactory', ['bsMindmap.bsMapNodeFactory',
                     }, null)
                 }
             },
+
+            /**
+             * insert a new MapNode
+             * @param {Object} rawNodeSpecs
+             * @param {Boolean=} external
+             */
             insertRawNode(rawNodeSpecs, external = false) {
-                console.log(rawNodeSpecs);
                 let id = rawNodeSpecs.id;
                 let parentID = id.substr(0,id.length - ID_LENGTH);
                 let parent = this.getNodeByID(parentID);
 
-                console.log(parent);
                 parent.addNode(rawNodeSpecs, external);
             },
+
+            /**
+             * update an existing MapNode
+             * @param {Object} rawNodeSpecs
+             * @param {Boolean=} external
+             */
             updateRawNode(rawNodeSpecs, external = false) {
                 let id = rawNodeSpecs.id;
                 let updateNode = this.getNodeByID(id);
                 updateNode.update(rawNodeSpecs, external);
             },
 
+            /**
+             * start participating in Session
+             */
             startActiveSession() {
                 return bsSockets.getSocket().then((socket) => {
                     socket.emit("sessionID", this.getID());
 
                     socket.on("joinedUser", () => {
                         activeUsers++;
+                        console.log("new User: ", activeUsers);
                         this._trigger('updateUser', activeUsers);
                     });
                     socket.on("leftUser", () => {
@@ -87,6 +124,17 @@ bsMindmapModule.factory('bsMindmap.bsMapFactory', ['bsMindmap.bsMapNodeFactory',
                 });
             },
 
+            /**
+             * stop participating in Session
+             */
+            suspendSession() {
+                bsSockets.closeSocket();
+            },
+
+            /**
+             * get number of active users
+             * @returns {Number}
+             */
             getActiveUser() {
                 return activeUsers;
             }

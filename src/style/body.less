@@ -6,6 +6,15 @@ body {
   font-size: 1.2em;
   color: #ffffff;
 
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(145deg,  #eeba92 0%,#8ecff9 100%) fixed no-repeat;
+
+  &:after {
+    content: '|';
+    opacity: 0;
+  }
+
   .boldUp (@fontWeight : 100) {
     font-family: 'LetoThin', sans-serif;
     font-weight: @fontWeight;

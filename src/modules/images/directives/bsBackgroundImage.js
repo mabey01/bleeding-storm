@@ -4,6 +4,12 @@
 
 bsImagesModule.directive('bsBackgroundImage', ["bsImages.FullBackgroundImages", function(fullBackgroundImages) {
 
+    /**
+     * load an Array of images
+     * @param {Array.<String>} images
+     * @param {String=} dir
+     * @returns {Promise}
+     */
     var loadImages = function(images, dir = '/') {
         return new Promise((resolve, reject) => {
             let loadedImages = [];

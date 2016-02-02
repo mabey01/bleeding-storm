@@ -6,6 +6,11 @@ bsUtilModule.service('bsUtil.idGenerator', [function () {
 
     const CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
+    /**
+     * create random id with a specific length
+     * @param {Number=} charLength
+     * @returns {string}
+     */
     this.createID = (charLength = 16) => {
         var uid = '';
         for (var i = 0; i < charLength; i++) {

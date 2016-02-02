@@ -2,7 +2,7 @@
  * Created by Maximilian on 19.05.2015.
  */
 
-bsMindmapModule.directive('bsDraggable', ['bsUtil.touchSupport', function (touchSupport) {
+bsMindmapModule.directive('bsDraggable', ['bsUtil.touchSupport', 'bsUtil.bsEvent', function (touchSupport, bsEventFactory) {
     return {
         restrict : 'AC',
         priority : 100,
@@ -24,9 +24,9 @@ bsMindmapModule.directive('bsDraggable', ['bsUtil.touchSupport', function (touch
             }
 
             /**
-             *
-             * @param newCoordinates
-             * @returns {*}
+             * get delta coordinates from last dragstart
+             * @param {{x: Number, y: Number}} newCoordinates
+             * @returns {{x: Number, y: Number}}
              */
             function getNewDragCoordinates(newCoordinates) {
                 if (lastCoordinates) {
@@ -42,6 +42,11 @@ bsMindmapModule.directive('bsDraggable', ['bsUtil.touchSupport', function (touch
                 return dragCoordinates;
             }
 
+            /**
+             * get delta movement from last drag
+             * @param newCoordinates
+             * @returns {{x: Number, y: Number}}
+             */
             function getMovement(newCoordinates) {
                 let moveX = 0;
                 let moveY = 0;
@@ -56,23 +61,25 @@ bsMindmapModule.directive('bsDraggable', ['bsUtil.touchSupport', function (touch
 
             /**
              * trigger the start of a dragging motion
-             * @param event
+             * @param {Event} event
              */
             function triggerDragStart(event) {
                 reset();
                 document.body.style.cursor = 'move';
+                let dragstartEvent = bsEventFactory.construct("dragstart", event);
 
-                let dragstartEvent = new MouseEvent("dragstart", event);
                 dragTagret.dispatchEvent(dragstartEvent);
             }
 
             /**
              * trigger the drag event
+             * @param {Event} event
+             * @param {{x: Number, y: Number}} screenCoordinates
              */
             function triggerDrag(event, screenCoordinates) {
                 event.stopPropagation();
 
-                let dragEvent = new MouseEvent("drag", event);
+                let dragEvent = bsEventFactory.construct("drag", event);
 
                 dragEvent.movement = getMovement(screenCoordinates);
                 dragEvent.drag = getNewDragCoordinates(screenCoordinates);
@@ -81,7 +88,7 @@ bsMindmapModule.directive('bsDraggable', ['bsUtil.touchSupport', function (touch
 
             /**
              * trigger the dragend event
-             * @param event
+             * @param {Event} event
              */
             function triggerDragEnd(event) {
                 event.stopPropagation();
@@ -89,7 +96,7 @@ bsMindmapModule.directive('bsDraggable', ['bsUtil.touchSupport', function (touch
                 document.body.style.cursor = 'auto';
 
                 if (dragCoordinates) {
-                    let dragendEvent = new MouseEvent("dragend", event);
+                    let dragendEvent = bsEventFactory.construct("dragend", event);;
                     dragendEvent.dragCoordinates = dragCoordinates;
                     dragTagret.dispatchEvent(dragendEvent);
                     dragCoordinates = null;

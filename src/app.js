@@ -19,9 +19,8 @@ angular.module('bleeding-storm', [
 ])
     .constant('$backendURL', 'http://localhost:4444')
     .constant('$frontendURL', window.location.origin + window.location.pathname)
-
-    .config(['$routeProvider', '$translateProvider', function (routeProvider, translate) {
-        var translationEN = {
+    .constant('$translations', {
+        en : {
             HEADLINE: 'Hello and Welcome to bleeding-storm!',
             ACTIVE_USER : 'Active User',
             TIME_LEFT : 'Time left',
@@ -37,9 +36,8 @@ angular.module('bleeding-storm', [
                 CONFIRMATION :'Your Session was successfully created! Here is the link to your session',
                 CREATE_ANOTHER : 'Create another Session'
             }
-        };
-
-        var translationDE = {
+        },
+        de : {
             HEADLINE: 'Hallo und Willkommen bei bleeding-storm!',
             ACTIVE_USER : 'Aktive Benutzer',
             TIME_LEFT : 'Verbleibende Zeit',
@@ -52,30 +50,29 @@ angular.module('bleeding-storm', [
                 TIME: 'Zeit',
                 DURATION : 'Dauer',
                 CREATE : 'Erstellen',
-                CONFIRMATION :'Ihr Meeting wurde erfolgreich erstellt! Hier ist der Link für ihr Meeting',
+                CONFIRMATION :'Ihr Meeting wurde erfolgreich erstellt! Hier ist der Link fÃ¼r ihr Meeting',
                 CREATE_ANOTHER : 'Weitere Meetings erstellen'
             }
-        };
+        }
+    })
+
+    .config(['$routeProvider', '$translateProvider', '$translations', function (routeProvider, translate, translations) {
 
         translate
             .useSanitizeValueStrategy('escaped')
-            .translations('en', translationEN)
-            .translations('de', translationDE)
+            .translations('en', translations.en)
+            .translations('de', translations.de)
             .preferredLanguage('en');
 
         routeProvider.when('/:sessionID', {
            controller : 'bsSessionCtrl',
             resolve : {
-              session : ['$route', 'bsSession.sessionRegistry', function(route, sessionRegistry) {
+              session : ['$route', 'bsSession.bsSessionRegistry', function(route, sessionRegistry) {
                   var sessionID = route.current.params.sessionID;
                   return sessionRegistry.getSession(sessionID);
               }]
             },
             templateUrl : 'templates/session/sessionCtrl.tpl.html'
-        });
-        routeProvider.when('/error', {
-            controller : 'bsErrorCtrl',
-            templateUrl : 'templates/error/errorCtrl.tpl.html'
         });
         routeProvider.otherwise({
             controller : 'bsHomeCtrl',

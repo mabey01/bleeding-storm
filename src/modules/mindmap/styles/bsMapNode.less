@@ -11,12 +11,28 @@ bs-map-node {
     }
   }
 
+  &.touch {
+    ul {
+      display: block;
+
+      li:after {
+        display: flex;
+      }
+    }
+  }
+
+  &.freeze{
+    ul {
+      display: none!important;
+    }
+  }
+
   &.node.editable > div{
-    background-color: rgba(69, 166, 195, 1);
+    background-color: rgb(255, 195, 40);
   }
 
   &.node.nonEditable > div{
-    background-color: rgba(255, 209, 77, 1);
+    background-color: rgba(69, 166, 195, 1);
   }
 
   > div {
@@ -29,6 +45,10 @@ bs-map-node {
     white-space: pre;
     min-height: 1em;
     display: block;
+
+    p {
+      margin: 0;
+    }
   }
 
   ul {

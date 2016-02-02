@@ -4,6 +4,10 @@
 
 bsUtilModule.service("bsUtil.touchSupport", [function() {
 
+    /**
+     * is touch supported
+     * @returns {Boolean}
+     */
     this.isTouchSupported = () => {
         return (('ontouchstart' in window)
         || (navigator.MaxTouchPoints > 0)
